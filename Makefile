@@ -34,24 +34,25 @@ COURSES = \
 PAGES_TMP=$(addsuffix .html, $(COURSES))
 PAGES_HTML=$(addprefix public_html/, $(PAGES_TMP))
 
-all: $(PAGES_HTML) _menu.md _menu.html public_html/index.html
+all: $(PAGES_HTML) _menu.md _menu.html public_html/index.html main.css
 
 .PHONY: all clean
 
 
 _menu.md: src/N*.meta ./bin/make_menu.sh
-	./bin/make_menu.sh src/N*.meta >_menu.md
+        ./bin/make_menu.sh src/N*.meta >_menu.md
 
 _menu.html: _menu.md
-	pandoc _menu.md >_menu.html
+        pandoc _menu.md >_menu.html
 
-public_html/%.html: src/%.md template.html
-	pandoc --template template.html -o $@ $<
+public_html/%.html: src/%.md template.html _menu.html
+        pandoc --template template.html -B _menu.html -o $@ $< --metadata-file
 
 
-public_html/index.html: src/index.md template.html _menu.html
-	pandoc --template template.html _menu.html  src/index.md >public_html/index.html
+ppublic_html/index.html: src/index.md template.html _menu.html
+        pandoc --template template.html -B  _menu.html  src/index.md >public_html/index.html
 
 clean:
-	rm -f public_html/*.html _menu.html _menu.md 
+        rm -f public_html/*.html _menu.html _menu.md
+
 
